@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Path
 from typing import Annotated
-from pydantic import BaseModel, Field
+from models.todos_model import TodoRequest
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -20,11 +20,7 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-class TodoRequest(BaseModel):
-    title: str = Field(min_length=3)
-    description: str = Field(min_length=3, max_length=100)
-    priority: int = Field(gt=0, lt=6)
-    complete: bool
+
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_todos(db: db_dependency):
