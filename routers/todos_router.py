@@ -4,10 +4,8 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from starlette import status
 
-from models import Todos
 from database import localsession
-
-
+from models.todos_model import Todos
 
 router = APIRouter()
 
@@ -17,6 +15,8 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
 
 db_dependency = Annotated[Session, Depends(get_db)]
 

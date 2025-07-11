@@ -1,5 +1,7 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Boolean
+from .base import Base
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+
 
 class Todos(Base):
     __tablename__ = "todos"
@@ -8,4 +10,5 @@ class Todos(Base):
     description = Column(String)
     priority = Column(Integer)
     complete = Column(Boolean, default=False)
+    owner = Column(Integer, ForeignKey("users.id"))
 
