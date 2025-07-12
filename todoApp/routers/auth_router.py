@@ -4,9 +4,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
-from database import localsession
-from models.token_model import Token
-from models.users_model import Users, UserRequest
+from ..database import localsession
+from ..models.token_model import Token
+from ..models.users_model import Users, UserRequest
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError

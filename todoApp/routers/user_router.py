@@ -6,9 +6,9 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from starlette import status
 
-from database import localsession
+from ..database import localsession
 
-from models.users_model import Users
+from ..models.users_model import Users
 from .auth_router import get_current_user
 
 
