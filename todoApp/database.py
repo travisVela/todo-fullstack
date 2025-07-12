@@ -7,7 +7,11 @@ from sqlalchemy.ext.declarative import declarative_base
 
 load_dotenv()
 
-engine = create_engine(getenv("SQLITE_DB_URL"), connect_args={'check_same_thread': False})
+# SQLITE CONNECTION WITH ARGS
+# engine = create_engine(getenv("SQLITE_DB_URL"), connect_args={'check_same_thread': False})
+
+engine = create_engine(getenv("SQLITE_DB_URL"))
+
 
 localsession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
