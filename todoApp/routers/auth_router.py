@@ -18,6 +18,8 @@ router = APIRouter(
 )
 
 load_dotenv()
+brcypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 def get_db():
     db = localsession()
@@ -29,15 +31,14 @@ def get_db():
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
-user_dependency = Annotated[OAuth2PasswordRequestForm, Depends()]
-brcypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
+
+
 
 
 '''
 UTIL FUNCTIONS
 '''
-token = Token
+
 def authenticate_user(username: str, password: str, db: db_dependency):
     user = db.query(Users).filter(Users.username == username).first()
     if not user:
@@ -46,21 +47,25 @@ def authenticate_user(username: str, password: str, db: db_dependency):
         return False
     return user
 
-def create_token(username: str, id: int, expires_delta: timedelta):
+def create_token(username: str, id: int, role: str,  expires_delta: timedelta):
     expires = datetime.now(timezone.utc) + expires_delta
-    encode = {"sub": username,  "id": id, 'exp':expires }
+    encode = {"sub": username,  "id": id, "role": role, "exp": expires}
+    now = expires.strftime("%H,%I,%M")
+    print(now)
     return jwt.encode(encode, getenv("SECRET_KEY"), getenv("ALGORITHM"))
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+    print(token)
     try:
         payload = jwt.decode(token, getenv("SECRET_KEY"), algorithms=[getenv("ALGORITHM")])
         username: str = payload.get("sub")
-        id: int = payload.get("id")
-        if not username or not id:
+        user_id: int = payload.get("id")
+        user_role: str = payload.get("role")
+        if not username or not user_id:
             raise HTTPException(status_code=401, detail="Could not validate credentials")
-        return {"username": username, "id": id}
+        return {"username": username, "id": user_id, "user_role": user_role}
     except JWTError:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+        raise HTTPException(status_code=401, detail="Could not validate credentials!!")
 '''
 API ENDPOINTS
 '''
@@ -83,10 +88,10 @@ async def create_user(db: db_dependency, ur: UserRequest):
     db.commit()
 
 @router.post("/token", response_model=Token)
-async def login(ud: user_dependency, db: db_dependency):
-   user = authenticate_user(ud.username, ud.password, db)
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
+   user = authenticate_user(form_data.username, form_data.password, db)
    if not user:
        raise HTTPException(status_code=401, detail="Could not validate credentials")
 
-   token = create_token(user.username, user.id, timedelta(minutes=20))
-   return {"token": token, "type": "bearer"}
+   token = create_token(user.username, user.id, user.role, timedelta(minutes=20))
+   return {"access_token": token, "token_type": "bearer"}
