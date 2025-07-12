@@ -8,9 +8,9 @@ from sqlalchemy.ext.declarative import declarative_base
 load_dotenv()
 
 # SQLITE CONNECTION WITH ARGS
-# engine = create_engine(getenv("SQLITE_DB_URL"), connect_args={'check_same_thread': False})
+# engine = create_engine(getenv("SQLALCHEMY_DATABASE_URL"), connect_args={'check_same_thread': False})
 
-engine = create_engine(getenv("SQLITE_DB_URL"))
+engine = create_engine(getenv("SQLALCHEMY_DATABASE_URL"))
 
 
 localsession = sessionmaker(autocommit=False, autoflush=False, bind=engine)

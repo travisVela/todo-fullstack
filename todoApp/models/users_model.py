@@ -15,6 +15,7 @@ class Users(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(String)
     is_active = Column(Boolean, default=True)
+    phone_number = Column(String(16))
 
 class UserRequest(BaseModel):
     username: str
@@ -23,5 +24,6 @@ class UserRequest(BaseModel):
     lastname: str
     password: str
     role: str
+    phone_number: str
 
 

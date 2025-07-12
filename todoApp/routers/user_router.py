@@ -53,3 +53,12 @@ async def change_password(user: user_dependency, db: db_dependency, uv: UserVeri
 
     db.add(this_user)
     db.commit()
+
+@router.put("/change-phonenumber/{num}",status_code=status.HTTP_204_NO_CONTENT)
+async def change_phonenumber(user: user_dependency, db: db_dependency, num: str):
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    this_user = db.query(Users).filter(Users.id == user.get("id")).first()
+    this_user.phone_number =num
+    db.add(this_user)
+    db.commit()
