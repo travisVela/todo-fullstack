@@ -38,7 +38,7 @@ async def get_todo_by_id(user: user_dependency, db: db_dependency, id: int = Pat
         raise HTTPException(status_code=401, detail="Unauthorized")
     todo = db.query(Todos).filter(Todos.id == id).filter(Todos.owner_id == user.get("id")).first()
     if not todo:
-        raise HTTPException(status_code=404, detail="No item found")
+        raise HTTPException(status_code=404, detail="Todo not found")
     return todo
 
 @router.post("/todo", status_code=status.HTTP_201_CREATED)
@@ -57,7 +57,7 @@ async def update_todo(user: user_dependency, db: db_dependency, todo: TodoReques
     this_todo = db.query(Todos).filter(Todos.id == id).filter(Todos.owner_id == user.get("id")).first()
 
     if not this_todo:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=404, detail="Todo not found")
 
     this_todo.title = todo.title
     this_todo.description = todo.description
@@ -73,6 +73,6 @@ async def delete_todo(user: user_dependency, db: db_dependency, id: int = Path(g
         raise HTTPException(status_code=401, detail="Unauthorized")
     this_todo = db.query(Todos).filter(Todos.id == id).filter(Todos.owner_id == user.get("id")).first()
     if not this_todo:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=404, detail="Todo not found")
     db.delete(this_todo)
     db.commit()
