@@ -39,14 +39,14 @@ async def get_user(user: user_dependency, db: db_dependency):
         raise HTTPException(status_code=401, detail="Unauthorized")
     return db.query(Users).filter(Users.id == user.get("id")).first()
 
-@router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/change-password", status_code=status.HTTP_204_NO_CONTENT)
 async def change_password(user: user_dependency, db: db_dependency, uv: UserVerification):
     if not user:
         raise HTTPException(status_code=401, detail="Unauthorized")
     this_user = db.query(Users).filter(Users.id == user.get("id")).first()
 
     if not this_user:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=404, detail="User not found")
     if not brcypt_context.verify(uv.password, this_user.hashed_password):
         raise HTTPException(status_code=401, detail="Unauthorized")
     this_user.hashed_password = brcypt_context.hash(uv.newpassword)

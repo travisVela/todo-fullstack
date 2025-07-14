@@ -48,7 +48,7 @@ async def delete_todo(user: user_dependency, db: db_dependency, id: int = Path(g
 @router.delete("/user/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def admin_delete_user(user: user_dependency, db: db_dependency, id: int):
     if user is None or user.get("user_role") != "admin":
-        raise HTTPException(status_code=401, detail="Nope")
+        raise HTTPException(status_code=401, detail="Todo not found")
     user_to_delete = db.query(Users).filter(Users.id == id).first()
 
     if not user_to_delete:
